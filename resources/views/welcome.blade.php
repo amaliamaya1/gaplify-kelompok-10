@@ -1,20 +1,25 @@
-@extends('layouts.app')
-
-@section('title', 'Beranda')
-
-@section('content')
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gaplify - Beranda</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="font-sans antialiased bg-white">
 <div class="bg-white">
     <!-- Navbar -->
     <nav class="sticky top-0 z-50 bg-white border-b border-[#E2E8F0] shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center relative">
             <!-- Logo -->
-            <a href="{{ route('home') }}" class="flex items-center space-x-2.5 group">
+            <a href="{{ route('home') }}" class="flex items-center space-x-2.5 group z-10">
                 <img src="{{ asset('images/logo.png') }}" alt="Gaplify Logo" class="w-9 h-9 group-hover:scale-105 transition-transform">
                 <span class="text-xl font-bold text-[#0F172A] group-hover:text-[#2563EB] transition-colors" style="font-family:'Poppins',sans-serif;"></span>
             </a>
 
             <!-- Nav Links (smooth scroll) -->
-            <div class="hidden md:flex space-x-8 text-[15px] font-medium text-[#64748B]">
+            <div class="hidden md:flex space-x-8 text-[15px] font-medium text-[#64748B] absolute left-1/2 -translate-x-1/2">
                 <a href="#fitur" onclick="smoothScroll('fitur')" class="hover:text-[#2563EB] transition-colors cursor-pointer">Fitur</a>
                 <a href="#cara-kerja" onclick="smoothScroll('cara-kerja')" class="hover:text-[#2563EB] transition-colors cursor-pointer">Cara Kerja</a>
                 <a href="#topik" onclick="smoothScroll('topik')" class="hover:text-[#2563EB] transition-colors cursor-pointer">Testimoni</a>
@@ -24,18 +29,26 @@
             @auth
             <div class="flex items-center space-x-2">
                 <!-- Bell -->
-                <button class="relative p-2 text-[#64748B] hover:text-[#2563EB] hover:bg-[#E0F2FE] rounded-full transition-colors" title="Notifikasi">
+                <a href="{{ route('notifications.index') }}" 
+                   x-data="{ hasUnread: localStorage.getItem('notifications_read') !== 'true' }" 
+                   @click="localStorage.setItem('notifications_read', 'true'); hasUnread = false;" 
+                   class="relative p-2 text-[#64748B] hover:text-[#2563EB] hover:bg-[#E0F2FE] rounded-full transition-colors block" 
+                   title="Notifikasi">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                     </svg>
-                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-[#EF4444] rounded-full border-2 border-white"></span>
-                </button>
+                    <span x-cloak x-show="hasUnread" class="absolute top-0 right-0 w-3.5 h-3.5 bg-red-500 text-white text-[9px] font-bold rounded-full border-2 border-white flex items-center justify-center">2</span>
+                </a>
 
                 <!-- Profile Avatar + Dropdown -->
                 <div class="relative" id="profile-dropdown-wrap">
                     <button id="profile-btn" onclick="toggleDropdown()"
-                        class="w-9 h-9 rounded-full bg-gradient-to-br from-[#2563EB] to-[#1d4ed8] flex items-center justify-center text-white font-bold text-sm shadow focus:outline-none hover:opacity-90 transition-opacity cursor-pointer">
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        class="w-9 h-9 rounded-full bg-gradient-to-br from-[#2563EB] to-[#1d4ed8] flex items-center justify-center text-white font-bold text-sm shadow focus:outline-none hover:opacity-90 transition-opacity cursor-pointer overflow-hidden border border-blue-200">
+                        @if(Auth::user()->avatar)
+                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Avatar" class="w-full h-full object-cover">
+                        @else
+                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        @endif
                     </button>
 
                     <!-- Dropdown -->
@@ -60,9 +73,19 @@
                 </div>
             </div>
             @else
-            <div class="flex items-center space-x-4">
-                <a href="{{ route('login') }}" class="text-[15px] font-semibold text-[#64748B] hover:text-[#2563EB] transition-colors">Masuk</a>
-                <a href="{{ route('register') }}" class="text-[15px] font-semibold bg-[#2563EB] text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-colors shadow-sm">Mulai Gratis</a>
+            <div class="flex items-center space-x-3">
+                <a href="{{ route('login') }}" class="flex items-center text-[15px] font-bold text-[#64748B] border-2 border-[#E2E8F0] hover:border-[#CBD5E1] bg-white px-5 py-2 rounded-xl hover:text-[#0F172A] transition-all">
+                    <svg class="w-5 h-5 mr-2 text-[#94A3B8]" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Masuk
+                </a>
+                <a href="{{ route('register') }}" class="flex items-center text-[15px] font-bold bg-[#2563EB] text-white px-5 py-2 rounded-xl hover:bg-blue-700 transition-all shadow-sm hover:shadow-md">
+                    <svg class="w-5 h-5 mr-1.5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                    Mulai Gratis
+                </a>
             </div>
             @endauth
         </div>
@@ -111,26 +134,49 @@
     <!-- Features Section -->
     <div id="fitur" class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-20">
         <div class="text-center mb-16">
-            <span class="text-[#2563EB] text-sm font-bold tracking-widest uppercase">FITUR UNGGULAN</span>
+            <span class="inline-flex items-center justify-center space-x-2 text-[#2563EB] text-sm font-bold tracking-widest uppercase">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                </svg>
+                <span>FITUR UNGGULAN</span>
+            </span>
             <h2 class="text-[2rem] md:text-[2.5rem] font-bold text-[#0F172A] mt-3 mb-4">Semua yang Kamu Butuhkan untuk<br/>Belajar TKJ Lebih Efektif</h2>
             <p class="text-[#64748B] max-w-2xl mx-auto text-[16px]">Dirancang untuk kurikulum TKJ SMK dengan pendekatan berbasis data.</p>
         </div>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach([
-                ['icon'=>'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z','bg'=>'bg-blue-100','text'=>'text-[#2563EB]','title'=>'Tes Diagnostik','desc'=>'Kerjakan soal pilihan ganda yang komprehensif dari berbagai topik TKJ dan pilih topik spesifik atau tes semua topik sekaligus.'],
-                ['icon'=>'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z','bg'=>'bg-cyan-100','text'=>'text-[#06B6D4]','title'=>'Analisis Skill Gap','desc'=>'Lihat hasilmu dalam grafik visual yang mudah dipahami. Ketahui topik mana yang perlu diperkuat segera.'],
-                ['icon'=>'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4','bg'=>'bg-green-100','text'=>'text-[#22C55E]','title'=>'Rekomendasi Materi','desc'=>'Dapatkan rekomendasi materi personal berdasarkan hasil analisismu. Belajar lebih terarah dan efisien.'],
-                ['icon'=>'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z','bg'=>'bg-amber-100','text'=>'text-[#F59E0B]','title'=>'Monitoring Guru','desc'=>'Guru dapat memantau perkembangan seluruh siswa, melihat statistik kelas, dan mengidentifikasi yang perlu pendampingan.'],
-                ['icon'=>'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z','bg'=>'bg-purple-100','text'=>'text-purple-600','title'=>'Responsif & Modern','desc'=>'Akses dari mana saja, di perangkat apa pun. Antarmuka modern dirancang agar nyaman dan mudah digunakan.'],
-                ['icon'=>'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z','bg'=>'bg-red-100','text'=>'text-[#EF4444]','title'=>'Privasi Data Aman','desc'=>'Data kamu disimpan dengan aman dan tidak dibagikan kepada pihak ketiga tanpa izin.'],
+                ['icon'=>'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z','bg'=>'bg-blue-100','text'=>'text-[#2563EB]','title'=>'Tes Diagnostik','desc'=>'Kerjakan soal pilihan ganda yang komprehensif dari berbagai topik TKJ dan pilih topik spesifik atau tes semua topik sekaligus.', 'route' => 'student.test.index', 'role' => 'student'],
+                ['icon'=>'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z','bg'=>'bg-cyan-100','text'=>'text-[#06B6D4]','title'=>'Analisis Skill Gap','desc'=>'Lihat hasilmu dalam grafik visual yang mudah dipahami. Ketahui topik mana yang perlu diperkuat segera.', 'route' => 'student.analysis.index', 'role' => 'student'],
+                ['icon'=>'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4','bg'=>'bg-green-100','text'=>'text-[#22C55E]','title'=>'Rekomendasi Materi','desc'=>'Dapatkan rekomendasi materi personal berdasarkan hasil analisismu. Belajar lebih terarah dan efisien.', 'route' => 'student.recommendations.index', 'role' => 'student'],
+                ['icon'=>'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z','bg'=>'bg-amber-100','text'=>'text-[#F59E0B]','title'=>'Monitoring Guru','desc'=>'Guru dapat memantau perkembangan seluruh siswa, melihat statistik kelas, dan mengidentifikasi yang perlu pendampingan.', 'route' => 'teacher.dashboard', 'role' => 'teacher'],
+                ['icon'=>'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z','bg'=>'bg-purple-100','text'=>'text-purple-600','title'=>'Responsif & Modern','desc'=>'Akses dari mana saja, di perangkat apa pun. Antarmuka modern dirancang agar nyaman dan mudah digunakan.', 'route' => null, 'role' => null],
+                ['icon'=>'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z','bg'=>'bg-red-100','text'=>'text-[#EF4444]','title'=>'Privasi Data Aman','desc'=>'Data kamu disimpan dengan aman dan tidak dibagikan kepada pihak ketiga tanpa izin.', 'route' => null, 'role' => null],
             ] as $f)
-            <div class="bg-white border border-[#E2E8F0] rounded-2xl p-7 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all">
-                <div class="w-12 h-12 {{ $f['bg'] }} {{ $f['text'] }} rounded-xl flex items-center justify-center mb-5">
+            @php
+                $tag = 'div';
+                $href = '';
+                $hoverClass = 'cursor-pointer hover:shadow-md hover:-translate-y-1 group';
+                $onClick = '';
+                if (auth()->guest()) {
+                    $tag = 'a';
+                    $href = route('login');
+                } else {
+                    if ($f['role'] && auth()->user()->role === $f['role']) {
+                        $tag = 'a';
+                        $href = route($f['route']);
+                    } else {
+                        $msg = $f['role'] ? 'Fitur ini khusus untuk ' . ucfirst($f['role']) . '.' : 'Ini adalah informasi fitur bawaan Gaplify.';
+                        $onClick = "showInfo('$msg')";
+                    }
+                }
+            @endphp
+            <{{ $tag }} {{ $href ? 'href='.$href : '' }} {!! $onClick ? 'onclick="'.$onClick.'"' : '' !!} class="block bg-white border border-[#E2E8F0] rounded-2xl p-7 shadow-sm transition-all {{ $hoverClass }}">
+                <div class="w-12 h-12 {{ $f['bg'] }} {{ $f['text'] }} rounded-xl flex items-center justify-center mb-5 {{ $tag === 'a' ? 'group-hover:scale-110 transition-transform' : '' }}">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $f['icon'] }}"></path></svg>
                 </div>
-                <h3 class="text-[18px] font-bold text-[#0F172A] mb-2">{{ $f['title'] }}</h3>
+                <h3 class="text-[18px] font-bold text-[#0F172A] mb-2 {{ $tag === 'a' ? 'group-hover:text-[#2563EB] transition-colors' : '' }}">{{ $f['title'] }}</h3>
                 <p class="text-[#64748B] text-[14px] leading-relaxed">{{ $f['desc'] }}</p>
-            </div>
+            </{{ $tag }}>
             @endforeach
         </div>
     </div>
@@ -139,23 +185,45 @@
     <div id="cara-kerja" class="bg-[#E0F2FE] py-24 px-4 sm:px-6 lg:px-8 scroll-mt-20">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
-                <span class="text-[#2563EB] text-sm font-bold tracking-widest uppercase">CARA KERJA</span>
+                <span class="inline-flex items-center justify-center space-x-2 text-[#2563EB] text-sm font-bold tracking-widest uppercase">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                    </svg>
+                    <span>CARA KERJA</span>
+                </span>
                 <h2 class="text-[2rem] md:text-[2.5rem] font-bold text-[#0F172A] mt-3">4 Langkah Mudah Menuju<br/>Pembelajaran Terarah</h2>
             </div>
             <div class="relative">
                 <div class="hidden md:block absolute top-8 left-[12.5%] right-[12.5%] h-0.5 bg-[#2563EB]/20"></div>
                 <div class="grid md:grid-cols-4 gap-8">
                     @foreach([
-                        ['1','Pilih Topik','Pilih topik TKJ yang ingin diuji, atau pilih semua topik untuk tes komprehensif.'],
-                        ['2','Kerjakan Tes','Jawab soal pilihan ganda seputar materi TKJ dengan suasana tenang tanpa batas waktu.'],
-                        ['3','Lihat Analisis','Sistem otomatis menganalisis jawabanmu dan menampilkan grafik kemampuan per topik.'],
-                        ['4','Dapatkan Rekomendasi','Terima materi yang dipersonalisasi sesuai skill gap dan pantau perkembanganmu.'],
-                    ] as [$num,$title,$desc])
-                    <div class="text-center">
-                        <div class="w-16 h-16 mx-auto bg-[#2563EB] text-white rounded-full flex items-center justify-center text-2xl font-extrabold mb-5 relative z-10 border-4 border-[#E0F2FE] shadow-lg">{{ $num }}</div>
-                        <h4 class="text-[18px] font-bold text-[#0F172A] mb-2">{{ $title }}</h4>
+                        ['1','Pilih Topik','Pilih topik TKJ yang ingin diuji, atau pilih semua topik untuk tes komprehensif.', 'student.test.index', 'student'],
+                        ['2','Kerjakan Tes','Jawab soal pilihan ganda seputar materi TKJ dengan suasana tenang tanpa batas waktu.', 'student.test.index', 'student'],
+                        ['3','Lihat Analisis','Sistem otomatis menganalisis jawabanmu dan menampilkan grafik kemampuan per topik.', 'student.analysis.index', 'student'],
+                        ['4','Dapatkan Rekomendasi','Terima materi yang dipersonalisasi sesuai skill gap dan pantau perkembanganmu.', 'student.recommendations.index', 'student'],
+                    ] as [$num,$title,$desc,$routeName,$roleAccess])
+                    @php
+                        $tag = 'div';
+                        $href = '';
+                        $hoverClass = 'cursor-pointer group';
+                        $onClick = '';
+                        if (auth()->guest()) {
+                            $tag = 'a';
+                            $href = route('login');
+                        } else {
+                            if (auth()->user()->role === $roleAccess) {
+                                $tag = 'a';
+                                $href = route($routeName);
+                            } else {
+                                $onClick = "showInfo('Langkah ini untuk Siswa mengerjakan tes.')";
+                            }
+                        }
+                    @endphp
+                    <{{ $tag }} {{ $href ? 'href='.$href : '' }} {!! $onClick ? 'onclick="'.$onClick.'"' : '' !!} class="block text-center {{ $hoverClass }}">
+                        <div class="w-16 h-16 mx-auto bg-[#2563EB] text-white rounded-full flex items-center justify-center text-2xl font-extrabold mb-5 relative z-10 border-4 border-[#E0F2FE] shadow-lg {{ $tag === 'a' ? 'group-hover:scale-110 transition-transform' : '' }}">{{ $num }}</div>
+                        <h4 class="text-[18px] font-bold text-[#0F172A] mb-2 {{ $tag === 'a' ? 'group-hover:text-[#2563EB] transition-colors' : '' }}">{{ $title }}</h4>
                         <p class="text-[#64748B] text-[14px] leading-relaxed">{{ $desc }}</p>
-                    </div>
+                    </{{ $tag }}>
                     @endforeach
                 </div>
             </div>
@@ -164,40 +232,52 @@
 
     <!-- Topics Section -->
     <div id="topik" class="py-24 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto text-center scroll-mt-20">
-        <span class="text-[#2563EB] text-sm font-bold tracking-widest uppercase">TOPIK YANG DIUJIKAN</span>
+        <span class="inline-flex items-center justify-center space-x-2 text-[#2563EB] text-sm font-bold tracking-widest uppercase">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <span>TOPIK YANG DIUJIKAN</span>
+        </span>
         <h2 class="text-[2rem] md:text-[2.5rem] font-bold text-[#0F172A] mt-3 mb-5">Mencakup Seluruh Kompetensi TKJ</h2>
         <p class="text-[#64748B] mb-12 text-[16px]">Soal diagnostik dirancang mengacu pada silabus SMK TKJ Kurikulum Merdeka.</p>
         <div class="flex flex-wrap justify-center gap-4">
-            <!-- Jaringan Komputer -->
-            <span class="inline-flex items-center space-x-2 bg-blue-100 text-[#2563EB] px-5 py-3 rounded-xl font-semibold text-[14px] hover:bg-blue-200 transition-colors cursor-default">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>Jaringan Komputer</span>
-            </span>
-            <!-- IP Addressing -->
-            <span class="inline-flex items-center space-x-2 bg-cyan-100 text-[#06B6D4] px-5 py-3 rounded-xl font-semibold text-[14px] hover:bg-cyan-200 transition-colors cursor-default">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
-                <span>IP Addressing</span>
-            </span>
-            <!-- Subnetting -->
-            <span class="inline-flex items-center space-x-2 bg-amber-100 text-[#F59E0B] px-5 py-3 rounded-xl font-semibold text-[14px] hover:bg-amber-200 transition-colors cursor-default">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7zm4 0h8M8 12h8M8 17h8"/></svg>
-                <span>Subnetting</span>
-            </span>
-            <!-- Konfigurasi Perangkat -->
-            <span class="inline-flex items-center space-x-2 bg-green-100 text-[#22C55E] px-5 py-3 rounded-xl font-semibold text-[14px] hover:bg-green-200 transition-colors cursor-default">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <span>Konfigurasi Perangkat</span>
-            </span>
-            <!-- Troubleshooting -->
-            <span class="inline-flex items-center space-x-2 bg-red-100 text-[#EF4444] px-5 py-3 rounded-xl font-semibold text-[14px] hover:bg-red-200 transition-colors cursor-default">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                <span>Troubleshooting</span>
-            </span>
-            <!-- Keamanan Jaringan -->
-            <span class="inline-flex items-center space-x-2 bg-purple-100 text-purple-600 px-5 py-3 rounded-xl font-semibold text-[14px] hover:bg-purple-200 transition-colors cursor-default">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                <span>Keamanan Jaringan</span>
-            </span>
+            @php
+                $topikHover = 'cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all';
+                $topics = [
+                    ['title' => 'Jaringan Komputer', 'desc' => 'Materi Jaringan Komputer mencakup dasar-dasar, topologi, dan perangkat jaringan.', 'bg' => 'bg-blue-100', 'bgHover' => 'hover:bg-blue-200', 'textClass' => 'text-[#2563EB]', 'icon' => 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
+                    ['title' => 'IP Addressing', 'desc' => 'Materi IP Addressing mencakup IPv4, IPv6, dan subnetting dasar.', 'bg' => 'bg-cyan-100', 'bgHover' => 'hover:bg-cyan-200', 'textClass' => 'text-[#06B6D4]', 'icon' => 'M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18'],
+                    ['title' => 'Subnetting', 'desc' => 'Materi Subnetting mencakup perhitungan CIDR, VLSM, dan alokasi IP.', 'bg' => 'bg-amber-100', 'bgHover' => 'hover:bg-amber-200', 'textClass' => 'text-[#F59E0B]', 'icon' => 'M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7C5 4 4 5 4 7zm4 0h8M8 12h8M8 17h8'],
+                    ['title' => 'Konfigurasi Perangkat', 'desc' => 'Materi Konfigurasi Perangkat mencakup setup router, switch, dan access point.', 'bg' => 'bg-green-100', 'bgHover' => 'hover:bg-green-200', 'textClass' => 'text-[#22C55E]', 'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z'],
+                    ['title' => 'Troubleshooting', 'desc' => 'Materi Troubleshooting mencakup identifikasi dan solusi masalah jaringan.', 'bg' => 'bg-red-100', 'bgHover' => 'hover:bg-red-200', 'textClass' => 'text-[#EF4444]', 'icon' => 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'],
+                    ['title' => 'Keamanan Jaringan', 'desc' => 'Materi Keamanan Jaringan mencakup firewall, VPN, dan mitigasi serangan.', 'bg' => 'bg-purple-100', 'bgHover' => 'hover:bg-purple-200', 'textClass' => 'text-purple-600', 'icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'],
+                ];
+            @endphp
+            @foreach($topics as $topic)
+            <div x-data="{ open: false }" @click.outside="open = false" class="relative">
+                <div @click="open = !open" class="inline-flex items-center space-x-2 {{ $topic['bg'] }} {{ $topic['textClass'] }} px-5 py-3 rounded-xl font-semibold text-[14px] {{ $topikHover }} {{ $topic['bgHover'] }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $topic['icon'] }}"/></svg>
+                    <span>{{ $topic['title'] }}</span>
+                </div>
+                <!-- Popover Card -->
+                <div x-show="open" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 translate-y-2"
+                     style="display: none;"
+                     class="absolute top-full mt-3 left-1/2 -translate-x-1/2 w-72 bg-white border border-[#E2E8F0] shadow-xl rounded-2xl p-4 z-50 text-left">
+                    <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t border-l border-[#E2E8F0] transform rotate-45"></div>
+                    <div class="relative z-10 flex items-start space-x-3">
+                        <div class="mt-0.5 {{ $topic['textClass'] }}">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <p class="text-sm text-[#64748B] font-normal leading-relaxed">{{ $topic['desc'] }}</p>
+                    </div>
+                </div>
+            </div>
+            @endforeach
         </div>
     </div>
 
@@ -229,8 +309,7 @@
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
             <div class="col-span-1 md:col-span-2">
                 <div class="flex items-center space-x-3 mb-4">
-                    <img src="{{ asset('images/logo.png') }}" alt="Gaplify Logo" class="w-9 h-9">
-                    <span class="text-xl font-bold text-white" style="font-family:'Poppins',sans-serif;">Gaplify</span>
+                    <img src="{{ asset('images/putih logo.png') }}" alt="Gaplify Logo" class="h-10 w-auto object-contain">
                 </div>
                 <p class="text-[14px] mb-5 leading-relaxed">Platform Diagnostik dan Rekomendasi Pembelajaran TKJ untuk siswa SMK.</p>
                 <div class="flex space-x-4 text-[13px]">
@@ -282,5 +361,27 @@ document.addEventListener('click', function(e) {
         document.getElementById('profile-menu').classList.add('hidden');
     }
 });
+
+let toastTimeout;
+function showInfo(message) {
+    const toast = document.getElementById('info-toast');
+    document.getElementById('toast-message').innerText = message;
+    toast.classList.remove('translate-y-20', 'opacity-0');
+    
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+    }, 3000);
+}
 </script>
-@endsection
+
+<!-- Toast Popup -->
+<div id="info-toast" class="fixed bottom-6 right-6 bg-white border-l-4 border-[#2563EB] shadow-[0_10px_40px_-10px_rgba(37,99,235,0.2)] px-5 py-3 rounded-xl transform transition-all duration-300 translate-y-20 opacity-0 z-50 flex items-center space-x-3 pointer-events-none">
+    <div class="bg-blue-50 p-2 rounded-full text-[#2563EB]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    </div>
+    <span id="toast-message" class="text-[#0F172A] font-medium text-[14px]">Informasi</span>
+</div>
+
+</body>
+</html>
