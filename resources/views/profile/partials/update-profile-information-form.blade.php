@@ -9,30 +9,30 @@
         {{-- Foto Profil --}}
         <div>
             <label class="block text-[13px] font-semibold text-[#475569] mb-2">Foto Profil (Opsional)</label>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
 
                 {{-- Avatar Preview --}}
-                <div class="w-[52px] h-[52px] rounded-full overflow-hidden flex items-center justify-center bg-[#EFF6FF] border-2 border-[#DBEAFE] shrink-0">
+                <div class="w-[42px] h-[42px] rounded-full overflow-hidden flex items-center justify-center bg-[#EFF6FF] border-2 border-[#DBEAFE] shrink-0">
                     @if ($user->avatar)
                         <img id="avatar-preview-img" src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar" class="w-full h-full object-cover">
+                        <div id="avatar-preview-initials" class="w-full h-full flex items-center justify-center hidden">
+                            <span class="text-sm font-bold text-[#2563EB]">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                        </div>
                     @else
                         <div id="avatar-preview-initials" class="w-full h-full flex items-center justify-center">
-                            <span class="text-lg font-bold text-[#2563EB]">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                            <span class="text-sm font-bold text-[#2563EB]">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                         </div>
                         <img id="avatar-preview-img" src="" alt="Avatar" class="w-full h-full object-cover hidden">
                     @endif
                 </div>
 
-                <div>
-                    <label for="avatar" class="inline-flex items-center gap-2 cursor-pointer bg-white border border-[#E2E8F0] text-[#475569] hover:bg-[#F8FAFC] text-[13px] font-medium px-4 py-2 rounded-lg transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        Pilih Foto
-                    </label>
-                    <input id="avatar" name="avatar" type="file" accept="image/jpeg,image/png,image/jpg,image/gif" class="hidden" />
-                    <p id="avatar-filename" class="mt-1 text-[11px] text-[#94A3B8]">JPG, PNG atau GIF · Maks 2MB</p>
-                </div>
+                {{-- Choose File Button + Filename inline --}}
+                <label for="avatar"
+                    class="inline-flex items-center cursor-pointer bg-[#DBEAFE] hover:bg-[#BFDBFE] text-[#2563EB] text-[13px] font-medium px-4 py-1.5 rounded-full transition-colors shrink-0 select-none">
+                    Choose File
+                </label>
+                <input id="avatar" name="avatar" type="file" accept="image/jpeg,image/png,image/jpg,image/gif" class="hidden" />
+                <span id="avatar-filename" class="text-[13px] text-[#64748B] truncate max-w-[240px]">No file chosen</span>
             </div>
             <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
         </div>
@@ -92,7 +92,7 @@
                     x-transition
                     x-init="setTimeout(() => show = false, 3000)"
                     class="text-[13px] font-medium text-[#10B981]"
-                >✓ Foto profil berhasil disimpan.</p>
+                >Berhasil disimpan.</p>
             @endif
         </div>
     </form>
@@ -103,7 +103,7 @@
             const file = e.target.files[0];
             if (!file) return;
 
-            // Update filename label
+            // Update filename label inline
             const nameEl = document.getElementById('avatar-filename');
             if (nameEl) nameEl.textContent = file.name;
 

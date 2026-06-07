@@ -1,65 +1,38 @@
-    <form method="post" action="{{ route('password.update') }}" class="space-y-5">
+<form method="post" action="{{ route('password.update') }}" class="space-y-6">
         @csrf
         @method('put')
 
-        {{-- Kata Sandi Saat Ini --}}
         <div>
-            <label for="update_password_current_password" class="block text-[13px] font-semibold text-[#475569] mb-1.5">
-                Kata Sandi Saat Ini
-            </label>
-            <input
-                id="update_password_current_password"
-                name="current_password"
-                type="password"
-                autocomplete="current-password"
-                class="block w-full px-4 py-2.5 rounded-xl border border-[#E2E8F0] bg-white text-[14px] text-[#0F172A] shadow-sm focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition"
-            >
-            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-1.5" />
+            <x-input-label for="update_password_current_password" :value="__('Kata Sandi Saat Ini')" class="text-[#475569] font-medium" />
+            <x-text-input id="update_password_current_password" name="current_password" type="password" class="mt-2 block w-full rounded-xl border-[#E2E8F0] shadow-sm focus:border-[#2563EB] focus:ring-[#2563EB]" autocomplete="current-password" />
+            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
         </div>
 
-        {{-- Kata Sandi Baru --}}
         <div>
-            <label for="update_password_password" class="block text-[13px] font-semibold text-[#475569] mb-1.5">
-                Kata Sandi Baru
-            </label>
-            <input
-                id="update_password_password"
-                name="password"
-                type="password"
-                autocomplete="new-password"
-                class="block w-full px-4 py-2.5 rounded-xl border border-[#E2E8F0] bg-white text-[14px] text-[#0F172A] shadow-sm focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition"
-            >
-            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-1.5" />
+            <x-input-label for="update_password_password" :value="__('Kata Sandi Baru')" class="text-[#475569] font-medium" />
+            <x-text-input id="update_password_password" name="password" type="password" class="mt-2 block w-full rounded-xl border-[#E2E8F0] shadow-sm focus:border-[#2563EB] focus:ring-[#2563EB]" autocomplete="new-password" />
+            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
         </div>
 
-        {{-- Konfirmasi Kata Sandi Baru --}}
         <div>
-            <label for="update_password_password_confirmation" class="block text-[13px] font-semibold text-[#475569] mb-1.5">
-                Konfirmasi Kata Sandi Baru
-            </label>
-            <input
-                id="update_password_password_confirmation"
-                name="password_confirmation"
-                type="password"
-                autocomplete="new-password"
-                class="block w-full px-4 py-2.5 rounded-xl border border-[#E2E8F0] bg-white text-[14px] text-[#0F172A] shadow-sm focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition"
-            >
-            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-1.5" />
+            <x-input-label for="update_password_password_confirmation" :value="__('Konfirmasi Kata Sandi Baru')" class="text-[#475569] font-medium" />
+            <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-2 block w-full rounded-xl border-[#E2E8F0] shadow-sm focus:border-[#2563EB] focus:ring-[#2563EB]" autocomplete="new-password" />
+            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
         </div>
 
-        {{-- Tombol Simpan --}}
-        <div class="flex items-center gap-4 pt-1">
-            <button type="submit" class="px-6 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-[13px] rounded-xl transition-colors shadow-sm">
-                Simpan
+        <div class="flex items-center gap-4">
+            <button type="submit" class="inline-flex items-center px-6 py-2.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-sm rounded-xl transition-colors shadow-sm">
+                {{ __('Simpan') }}
             </button>
+
             @if (session('status') === 'password-updated')
                 <p
                     x-data="{ show: true }"
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-[13px] font-medium text-[#10B981]"
-                >Berhasil disimpan.</p>
+                    class="text-sm font-medium text-[#10B981]"
+                >{{ __('Berhasil disimpan.') }}</p>
             @endif
         </div>
     </form>
